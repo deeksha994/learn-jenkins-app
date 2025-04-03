@@ -99,6 +99,7 @@ pipeline {
             steps{
                 sh '''
                 npx playwright test --reporter=html
+                echo "node modules in folder"
                 '''
                 }
             post{
