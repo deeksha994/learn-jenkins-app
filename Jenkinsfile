@@ -69,7 +69,7 @@ pipeline {
                 }
              }
         }
-         stage('Deploy to stage') {
+        stage('Deploy to stage') {
             agent{
                 docker{
                     image 'node:18-alpine'
@@ -86,15 +86,11 @@ pipeline {
                 '''
             }
         }
-        stage('Approval') {
-            agent any
-            steps {
-                sh '''
-                input message:"Input question: Do you wish to deploy to production?"
-                input message:"Input OK button: Yes, I am sure!"
+        stage('Approval'){
+            steps{
+                input message: 'Do you wish to deploy to production ?', ok: 'Yes I am sure I want to deploy.'
             }
         }
-
         stage('Deploy to production') {
             agent{
                 docker{
@@ -133,7 +129,8 @@ pipeline {
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E Report', reportTitles: '', useWrapperFileDirectly: true])
                         }
                 }
-            }    
+        }    
     }
-    
 }
+    
+
