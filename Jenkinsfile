@@ -1,11 +1,17 @@
 pipeline {
     agent any
-    environment{
+    environment{ 
         NETLIFY_SITE_ID ='f044aa26-0297-4549-b127-4eb3a96a7579'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
         REACT_APP_VERSION = "1.0.$BUILD_ID"
     }
     stages {
+        stage('Docker'){
+            steps{
+                sh 'docker build -t playright_image .'
+            }
+        }
+
         stage('Build') {
             agent{
                 docker{
@@ -70,6 +76,7 @@ pipeline {
                 }
              }
         }
+
         stage('Deploy to stage') {
             agent{
                 docker{
@@ -96,7 +103,8 @@ pipeline {
                     publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Stage E2E Report', reportTitles: '', useWrapperFileDirectly: true])
                         }
                 }
-        }    
+        }  
+
         stage('Deploy to production') {
             agent{
                 docker{
