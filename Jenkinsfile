@@ -56,7 +56,7 @@ pipeline {
                 stage('E2E') {
                     agent{
                          docker{
-                            image 'mcr.microsoft.com/playwright:v1.50.1-noble'
+                            image 'playright_image'
                             reuseNode true
                             }
                         }
@@ -80,7 +80,7 @@ pipeline {
         stage('Deploy to stage') {
             agent{
                 docker{
-                image 'mcr.microsoft.com/playwright:v1.50.1-noble'
+                image 'playright_image'
                 reuseNode true
                     }
                 }
@@ -89,12 +89,11 @@ pipeline {
                 }
             steps{
                 sh '''
-                npm install netlify-cli node-jq
-                node_modules/.bin/netlify --version
+                netlify --version
                 echo "Deploying to stage ,site id:$NETLIFY_SITE_ID"
-                node_modules/.bin/netlify status
-                node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
-                CI_ENVIRONMENT_URL=$(node_modules/.bin/node-jq -r '.deploy_url'  deploy-output.json)
+                netlify status
+                netlify deploy --dir=build --json > deploy-output.json
+                CI_ENVIRONMENT_URL=$(node-jq -r '.deploy_url'  deploy-output.json)
                 npx playwright test --reporter=html
                 '''
                 }
@@ -108,7 +107,7 @@ pipeline {
         stage('Deploy to production') {
             agent{
                 docker{
-                image 'mcr.microsoft.com/playwright:v1.50.1-noble'
+                image 'playright_image'
                 reuseNode true
                     }
                 }
@@ -118,11 +117,10 @@ pipeline {
             steps{
                 sh '''
                 node --version
-                npm install netlify-cli 
-                node_modules/.bin/netlify --version
+                netlify --version
                 echo "Deploying to production ,site id:$NETLIFY_SITE_ID"
-                node_modules/.bin/netlify status
-                node_modules/.bin/netlify deploy --dir=build --prod
+                netlify status
+                netlify deploy --dir=build --prod
                 npx playwright test --reporter=html
                 '''
                 }
