@@ -6,13 +6,7 @@ pipeline {
         REACT_APP_VERSION = "1.0.$BUILD_ID"
     }
     stages {
-        stage('Docker'){
-            steps{
-                sh 'docker build -t playright_image .'
-            }
-        }
-
-        stage('Build') {
+         stage('Build') {
             agent{
                 docker{
                     image 'node:18-alpine'
